@@ -78,19 +78,18 @@ class LitMNIST(pl.LightningModule):
         self.accuracy = Accuracy()
 
     def forward(self, x):
-        x = self.model(x)
-        return F.log_softmax(x, dim=1)
+        return self.model(x)
 
     def training_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x)
-        loss = F.nll_loss(logits, y)
+        loss = F.cross_entropy(logits, y)
         return loss
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
         logits = self(x)
-        loss = F.nll_loss(logits, y)
+        loss = F.cross_entropy(logits, y)
         preds = torch.argmax(logits, dim=1)
         self.accuracy(preds, y)
 
