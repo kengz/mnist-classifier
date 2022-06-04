@@ -1,3 +1,4 @@
+from pathlib import Path
 from torch import nn
 from torch.utils.data import DataLoader, random_split
 from torchmetrics import Accuracy
@@ -11,9 +12,12 @@ import torch
 import torch.nn.functional as F
 
 
+DIR = Path(__file__).parent.parent
+
+
 class MNISTDataModule(pl.LightningDataModule):
     # Datamodule adapted from https://pytorch-lightning.readthedocs.io/en/stable/extensions/datamodules.html#what-is-a-datamodule
-    def __init__(self, data_dir: str = './', batch_size: int = 32, num_workers: int = os.cpu_count()):
+    def __init__(self, data_dir: str = DIR / 'data', batch_size: int = 32, num_workers: int = os.cpu_count()):
         super().__init__()
         self.data_dir = data_dir
         self.batch_size = batch_size
@@ -107,7 +111,7 @@ class LitMNIST(pl.LightningModule):
         return optimizer
 
 
-@hydra.main(version_base=None, config_path='.', config_name='config')
+@hydra.main(version_base=None, config_path=DIR, config_name='config')
 def main(cfg):
     dm = MNISTDataModule(**cfg.datamodule)
     model = LitMNIST(**cfg.model)
