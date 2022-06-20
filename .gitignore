@@ -129,6 +129,6 @@ dmypy.json
 .pyre/
 
 # project-specific
-mnist/raw/
+data/
 lightning_logs/
 outputs/
