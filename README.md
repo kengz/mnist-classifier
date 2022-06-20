@@ -14,8 +14,7 @@ Create a Conda environment and install dependencies. This MNIST example uses:
 ```bash
 conda create -n mnist python=3.10.4 -y
 conda activate mnist
-pip install pytorch-lightning pillow torchvision
-pip install hydra-core=1.2.0
+pip install -r requirements.txt
 ```
 
 ## Usage
@@ -24,11 +23,19 @@ Inspect/modify the Hydra config at `config.yaml`. Then run:
 
 ```bash
 python mnist/train.py
+
+# to change configs
+python mnist/train.py datamodule.batch_size=64 model.hidden_size=128
+
+# to resume (just the the resume config)
+python mnist/train.py datamodule.batch_size=64 model.hidden_size=128 resume=true
 ```
 
 This run training with validation at epoch-end, and test when training is done. Metrics will be logged from torchmetrics.
 
 ### dstack usage
+
+For use with [dstack](https://github.com/dstackai/dstack), install the CLI and run the workflow declared in `.dstack/workflows.yaml`.
 
 ```bash
 conda activate mnist

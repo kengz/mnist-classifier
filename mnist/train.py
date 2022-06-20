@@ -15,6 +15,28 @@ import torch.nn.functional as F
 DIR = Path(__file__).parent.parent
 
 
+def get_ckpt_path(cfg) -> Path:
+    '''Get the ckpt_path for resuming training from the last of lightning_logs/version_x if requested and available'''
+    ckpt_path = None  # default
+    if not cfg.get('resume'):  # don't resume
+        return ckpt_path
+
+    # first, try .pl_auto_save.ckpt from PL_FAULT_TOLERANT_TRAINING
+    if (path := DIR / '.pl_auto_save.ckpt').exists():
+        ckpt_path = path
+    # next, find the latest lightning_logs/version_*/checkpoints/*.ckpt by creation time
+    elif (default_dir := DIR / 'lightning_logs').exists():
+        ckpts = default_dir.glob('version_*/checkpoints/*.ckpt')
+        if latest_ckpt := max(ckpts, key=lambda x: x.stat().st_ctime):
+            ckpt_path = latest_ckpt
+
+    if ckpt_path is None:
+        raise FileNotFoundError('Trying to resume training from a checkpoint but could not find one')
+    else:
+        print(f'Resuming training from checkpoint: {ckpt_path}')
+        return ckpt_path
+
+
 class MNISTDataModule(pl.LightningDataModule):
     # Datamodule adapted from https://pytorch-lightning.readthedocs.io/en/stable/extensions/datamodules.html#what-is-a-datamodule
     def __init__(self, data_dir: str = DIR / 'data', batch_size: int = 32, num_workers: int = os.cpu_count()):
@@ -117,7 +139,7 @@ def main(cfg):
     model = LitMNIST(**cfg.model)
 
     trainer = pl.Trainer(**cfg.trainer)
-    trainer.fit(model, datamodule=dm)
+    trainer.fit(model, datamodule=dm, ckpt_path=get_ckpt_path(cfg))
     trainer.test(datamodule=dm, ckpt_path='best')
 
 
