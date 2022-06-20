@@ -11,7 +11,7 @@ workflows:
     requirements: requirements.txt
     script: mnist/train.py
     depends-on:
-      - download:latest
+      - download
     artifacts:
       - model
     resources:

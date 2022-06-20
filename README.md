@@ -27,3 +27,13 @@ python mnist/train.py
 ```
 
 This run training with validation at epoch-end, and test when training is done. Metrics will be logged from torchmetrics.
+
+### dstack usage
+
+```bash
+conda activate mnist
+pip install -U dstack
+
+dstack run download
+dstack run train
+```
