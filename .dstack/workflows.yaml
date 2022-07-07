@@ -13,6 +13,6 @@ workflows:
     depends-on:
       - download
     artifacts:
-      - model
+      - lightning_logs
     resources:
       gpu: 1
