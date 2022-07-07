@@ -5,4 +5,5 @@ model:
   learning_rate: 2e-4
 trainer:
   accelerator: auto # will switch to GPU if available
-  max_epochs: 4 # set to None to auto-stop on convergence
+  max_epochs: 10 # set to None to auto-stop on convergence
+resume: false # resume training from the latest checkpoint

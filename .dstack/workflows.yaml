@@ -1,0 +1,18 @@
+workflows:
+  - name: download
+    provider: python
+    requirements: requirements.txt
+    script: mnist/prepare_data.py
+    artifacts:
+      - data
+
+  - name: train
+    provider: python
+    requirements: requirements.txt
+    script: mnist/train.py
+    depends-on:
+      - download
+    artifacts:
+      - lightning_logs
+    resources:
+      gpu: 1
