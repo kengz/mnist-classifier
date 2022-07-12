@@ -26,15 +26,13 @@ def get_ckpt_path(cfg) -> Path:
         ckpt_path = path
     # next, find the latest lightning_logs/version_*/checkpoints/*.ckpt by creation time
     elif (default_dir := DIR / 'lightning_logs').exists():
-        ckpts = default_dir.glob('version_*/checkpoints/*.ckpt')
-        if latest_ckpt := max(ckpts, key=lambda x: x.stat().st_ctime):
+        ckpts = list(default_dir.glob('version_*/checkpoints/*.ckpt'))
+        if ckpts and (latest_ckpt := max(ckpts, key=lambda x: x.stat().st_ctime)):
             ckpt_path = latest_ckpt
 
-    if ckpt_path is None:
-        raise FileNotFoundError('Trying to resume training from a checkpoint but could not find one')
-    else:
+    if ckpt_path is not None:
         print(f'Resuming training from checkpoint: {ckpt_path}')
-        return ckpt_path
+    return ckpt_path
 
 
 class MNISTDataModule(pl.LightningDataModule):
