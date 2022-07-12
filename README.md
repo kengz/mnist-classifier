@@ -22,13 +22,14 @@ pip install -r requirements.txt
 Inspect/modify the Hydra config at `config.yaml`. Then run:
 
 ```bash
+# train. if previous training exists, it will resume from the last checkpoint.
 python mnist/train.py
 
 # to change configs
 python mnist/train.py datamodule.batch_size=64 model.hidden_size=128
 
-# to resume (just the the resume config)
-python mnist/train.py datamodule.batch_size=64 model.hidden_size=128 resume=true
+# start afresh
+python mnist/train.py resume=false
 ```
 
 This run training with validation at epoch-end, and test when training is done. Metrics will be logged from torchmetrics.
