@@ -1,12 +1,76 @@
 workflows:
+  - name: conda-setup
+    # setup conda dependencies to be reused in other workflows
+    provider: bash
+    commands:
+      # build conda environment
+      - curl -s https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o ./miniconda3.sh
+      - bash ./miniconda3.sh -b -u -p ./miniconda3
+      # export conda binary
+      - export PATH=./miniconda3/bin:$PATH
+      - conda config --set auto_activate_base false
+      - conda init bash
+      # create conda env, export the binary for reliability
+      - conda env create --file environment.yml
+      - export PATH=/workflow/miniconda3/envs/mnist/bin:$PATH
+      - conda clean -tipsy
+      - conda list
+      - echo 'done'
+    artifacts:
+      - miniconda3
+    resources:
+      # this needs to be the same as train, e.g. to install torch gpu
+      gpu:
+        name: K80
+        count: 1
+
   - name: download
+    depends-on:
+      - conda-setup
+    provider: bash
+    commands:
+      - export PATH=/workflow/miniconda3/envs/mnist/bin:$PATH
+      - python mnist/prepare_data.py
+    artifacts:
+      - data
+
+  - name: train
+    depends-on:
+      - conda-setup
+      - download
+    provider: bash
+    commands:
+      - export PATH=/workflow/miniconda3/envs/mnist/bin:$PATH
+      - python mnist/train.py
+    artifacts:
+      - lightning_logs
+    resources:
+      gpu:
+        name: K80
+        count: 1
+
+  # launch VSCode for development or debugging
+  - name: vscode
+    provider: code
+    artifacts:
+      - data
+    depends-on:
+      - conda-setup
+      - download
+    resources:
+      gpu:
+        name: K80
+        count: 1
+
+  # demos for pip usage
+  - name: pip-download
     provider: python
     requirements: requirements.txt
     script: mnist/prepare_data.py
     artifacts:
       - data
 
-  - name: train
+  - name: pip-train
     provider: python
     requirements: requirements.txt
     script: mnist/train.py
@@ -15,4 +79,6 @@ workflows:
     artifacts:
       - lightning_logs
     resources:
-      gpu: 1
+      gpu:
+        name: K80
+        count: 1
