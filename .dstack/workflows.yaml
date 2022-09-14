@@ -1,84 +1,58 @@
 workflows:
-  - name: conda-setup
-    # setup conda dependencies to be reused in other workflows
+  - name: prepare-data
     provider: bash
     commands:
-      # build conda environment
-      - curl -s https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o ./miniconda3.sh
-      - bash ./miniconda3.sh -b -u -p ./miniconda3
-      # export conda binary
-      - export PATH=./miniconda3/bin:$PATH
-      - conda config --set auto_activate_base false
-      - conda init bash
-      # create conda env, export the binary for reliability
-      - conda env create --file environment.yml
-      - export PATH=/workflow/miniconda3/envs/mnist/bin:$PATH
-      - conda clean -tipsy
-      - conda list
-      - echo 'done'
-    artifacts:
-      - miniconda3
-    resources:
-      # this needs to be the same as train, e.g. to install torch gpu
-      gpu:
-        name: K80
-        count: 1
-
-  - name: download
-    depends-on:
-      - conda-setup
-    provider: bash
-    commands:
-      - export PATH=/workflow/miniconda3/envs/mnist/bin:$PATH
+      - pip install -r requirements.txt
       - python mnist/prepare_data.py
     artifacts:
-      - data
+      - path: data
 
   - name: train
-    depends-on:
-      - conda-setup
-      - download
+    deps:
+      - workflow: prepare-data
     provider: bash
     commands:
-      - export PATH=/workflow/miniconda3/envs/mnist/bin:$PATH
+      - pip install -r requirements.txt
       - python mnist/train.py
     artifacts:
-      - lightning_logs
-    resources:
-      gpu:
-        name: K80
-        count: 1
+      - path: lightning_logs
 
-  # launch VSCode for development or debugging
-  - name: vscode
-    provider: code
+  - name: conda-setup
+    provider: bash
+    commands:
+      - conda env create --file environment.yml
+      - ls /opt/conda/envs
+      - conda clean -tipy
     artifacts:
-      - data
-    depends-on:
-      - conda-setup
-      - download
-    resources:
-      gpu:
-        name: K80
-        count: 1
+      - path: /opt/conda/envs/mnist
 
-  # demos for pip usage
-  - name: pip-download
-    provider: python
-    requirements: requirements.txt
-    script: mnist/prepare_data.py
-    artifacts:
-      - data
+  - name: check-conda
+    provider: bash
+    deps:
+      - workflow: conda-setup
+    commands:
+      - ls /opt/conda/envs
+      - conda env list
+      - sleep 10 # so log has time to stream to dstack
 
-  - name: pip-train
-    provider: python
-    requirements: requirements.txt
-    script: mnist/train.py
-    depends-on:
-      - download
+  - name: conda-prepare-data
+    provider: bash
+    deps:
+      - workflow: conda-setup
+    commands:
+      - export PATH=/opt/conda/envs/mnist/bin:$PATH
+      - conda env list
+      - conda list
+      - python mnist/prepare_data.py
     artifacts:
-      - lightning_logs
-    resources:
-      gpu:
-        name: K80
-        count: 1
+      - path: data
+
+  - name: conda-train
+    deps:
+      - workflow: conda-prepare-data
+    provider: bash
+    commands:
+      - export PATH=/opt/conda/envs/mnist/bin:$PATH
+      - python mnist/train.py trainer.enable_progress_bar=false
+    artifacts:
+      - path: lightning_logs
