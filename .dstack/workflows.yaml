@@ -1,18 +1,61 @@
 workflows:
-  - name: download
-    provider: python
-    requirements: requirements.txt
-    script: mnist/prepare_data.py
+  # WIP this conda caching still doesn't work
+  - name: setup-conda
+    provider: bash
+    commands:
+      - conda env create --file environment.yml
+      - ls /opt/conda/envs
+      - conda clean -tipy
     artifacts:
-      - data
+      - path: /opt/conda/envs/mnist
+
+  - name: check-conda
+    provider: bash
+    deps:
+      - workflow: setup-conda
+    commands:
+      - ls /opt/conda/envs
+      - conda env list
+      - sleep 10 # so log has time to stream to dstack
+
+  - name: prepare-data
+    provider: bash
+    deps:
+      - workflow: setup-conda
+    commands:
+      - conda env create --file environment.yml
+      - export PATH=/opt/conda/envs/mnist/bin:$PATH
+      - python mnist/prepare_data.py
+    artifacts:
+      - path: data
 
   - name: train
-    provider: python
-    requirements: requirements.txt
-    script: mnist/train.py
-    depends-on:
-      - download
+    deps:
+      - workflow: prepare-data
+    provider: bash
+    commands:
+      - conda env create --file environment.yml
+      - export PATH=/opt/conda/envs/mnist/bin:$PATH
+      - python mnist/train.py trainer.enable_progress_bar=false
     artifacts:
-      - lightning_logs
-    resources:
-      gpu: 1
+      - path: lightning_logs
+
+  # the following is for demo-only with pip
+
+  - name: pip-prepare-data
+    provider: bash
+    commands:
+      - pip install -r requirements.txt
+      - python -m mnist.prepare_data
+    artifacts:
+      - path: data
+
+  - name: pip-train
+    deps:
+      - workflow: prepare-data
+    provider: bash
+    commands:
+      - pip install -r requirements.txt
+      - python -m mnist.train
+    artifacts:
+      - path: lightning_logs

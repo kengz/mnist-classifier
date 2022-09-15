@@ -11,9 +11,17 @@ Create a Conda environment and install dependencies. This MNIST example uses:
 - [PyTorch Lightning](https://pytorch-lightning.readthedocs.io/en/stable/notebooks/lightning_examples/mnist-hello-world.html#Introduction-to-Pytorch-Lightning) for constructing data module and model that can work across machines and utilize accelerator devices (GPUs/TPUs) if available.
 - [Hydra](https://hydra.cc) config for cleanly specifying config
 
+### Using Conda (recommended)
+
 ```bash
-conda create -n mnist python=3.10.4 -y
-conda activate mnist
+conda env create --file environment.yml
+```
+
+### Using pip (for demo completeness)
+
+Pip-based installation is not recommended as it provides less control on the dependencies, can be less optimal, and some packages are also only released through Conda. However a `requirements.txt` file is provided here for demo of a pip setup.
+
+```bash
 pip install -r requirements.txt
 ```
 
@@ -36,13 +44,14 @@ This run training with validation at epoch-end, and test when training is done. 
 
 ### dstack usage
 
-For use with [dstack](https://github.com/dstackai/dstack), [install the CLI, setup your account](https://docs.dstack.ai/setup/), and run the workflow defined in `.dstack/workflows.yaml`.
+For use with [dstack](https://github.com/dstackai/dstack), [install the CLI](https://docs.dstack.ai/installation/) and [initialize the repo](https://docs.dstack.ai/quickstart/#init-the-repo), then run the workflow defined in `.dstack/workflows.yaml`.
 
 ```bash
 conda activate mnist
-pip install -U dstack
+
 # setup dstack
-dstack config --token <token>
+pip install -U dstack
+dstack init
 
 # run workflow
 dstack run train
