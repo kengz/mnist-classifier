@@ -1,0 +1,6 @@
+[project]
+name = "mnist"
+version = "0.0.1"
+
+[tool.setuptools]
+packages = ["mnist"]

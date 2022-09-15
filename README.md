@@ -44,13 +44,14 @@ This run training with validation at epoch-end, and test when training is done. 
 
 ### dstack usage
 
-For use with [dstack](https://github.com/dstackai/dstack), [install the CLI, setup your account](https://docs.dstack.ai/setup/), and run the workflow defined in `.dstack/workflows.yaml`.
+For use with [dstack](https://github.com/dstackai/dstack), [install the CLI](https://docs.dstack.ai/installation/) and [initialize the repo](https://docs.dstack.ai/quickstart/#init-the-repo), then run the workflow defined in `.dstack/workflows.yaml`.
 
 ```bash
 conda activate mnist
-pip install -U dstack
+
 # setup dstack
-dstack config --token <token>
+pip install -U dstack
+dstack init
 
 # run workflow
 dstack run train

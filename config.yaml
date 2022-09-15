@@ -6,4 +6,5 @@ model:
 trainer:
   accelerator: auto # will switch to GPU if available
   max_epochs: 10 # set to None to auto-stop on convergence
+  enable_progress_bar: true
 resume: true # resume training from the latest checkpoint

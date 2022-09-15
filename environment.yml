@@ -12,3 +12,4 @@ dependencies:
       - dstack==0.0.7
       - hydra-core==1.2.0
       - pytorch-lightning==1.6.5
+      - -e .
