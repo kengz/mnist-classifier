@@ -9,26 +9,25 @@ workflows:
     artifacts:
       - path: lightning_logs
 
-  # TODO waiting for abs path artifact support
   - name: setup-conda
     help: setup Conda env as artifact for reuse by mounting
     provider: bash
     commands:
       - conda env create --file environment.yml
-      - conda clean -tiy
-      - export PATH=/opt/conda/envs/mnist/bin:$PATH
-      - conda list
     artifacts:
       - path: /opt/conda/envs/mnist
 
-  - name: check-conda
+  - name: test-conda
+    help: Test Conda reuse
     provider: bash
     deps:
       - workflow: setup-conda
-    env:
-      - PATH=/opt/conda/envs/mnist/bin:$PATH
     commands:
-      - conda list
+      - conda env list
+      - conda activate mnist
+      - conda info
+      - which python
+      - python --version
       - python -c 'import torch; print(torch.__version__)'
 
   - name: download
@@ -36,9 +35,8 @@ workflows:
     provider: bash
     deps:
       - workflow: setup-conda
-    env:
-      - PATH=/opt/conda/envs/mnist/bin:$PATH
     commands:
+      - conda activate mnist
       - python mnist/prepare_data.py
     artifacts:
       - path: data
@@ -46,11 +44,11 @@ workflows:
   - name: train
     help: Train an MNIST model
     deps:
+      - workflow: setup-conda
       - workflow: download
     provider: bash
-    env:
-      - PATH=/opt/conda/envs/mnist/bin:$PATH
     commands:
+      - conda activate mnist
       - python mnist/train.py trainer.enable_progress_bar=false
     artifacts:
       - path: lightning_logs
