@@ -1,16 +1,17 @@
 workflows:
   - name: setup-train
-    help: directly setup Conda env and train
+    help: Directly setup Conda env and train, all-in-one
     provider: bash
     commands:
       - conda env create --file environment.yml
       - export PATH=/opt/conda/envs/mnist/bin:$PATH
-      - python mnist/train.py trainer.enable_progress_bar=false
+      - python mnist/train.py
     artifacts:
       - path: lightning_logs
 
+  # below splits the above into distinct workflows to run more efficiently by reusing Conda env
   - name: setup-conda
-    help: setup Conda env as artifact for reuse by mounting
+    help: Setup Conda env as artifact for reuse by mounting
     provider: bash
     commands:
       - conda env create --file environment.yml
@@ -18,15 +19,13 @@ workflows:
       - path: /opt/conda/envs/mnist
 
   - name: test-conda
-    help: Test Conda reuse
+    help: Quick test of Conda env
     provider: bash
     deps:
       - workflow: setup-conda
     commands:
       - conda env list
       - conda activate mnist
-      - conda info
-      - which python
       - python --version
       - python -c 'import torch; print(torch.__version__)'
 
@@ -49,7 +48,7 @@ workflows:
     provider: bash
     commands:
       - conda activate mnist
-      - python mnist/train.py trainer.enable_progress_bar=false
+      - python mnist/train.py
     artifacts:
       - path: lightning_logs
 
