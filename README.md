@@ -51,8 +51,8 @@ conda activate mnist
 
 # setup dstack
 pip install -U dstack
-dstack init
+dstack config
 
 # run workflow
-dstack run train
+dstack run setup-train
 ```
