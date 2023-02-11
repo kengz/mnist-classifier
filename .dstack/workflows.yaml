@@ -4,7 +4,7 @@ workflows:
     provider: bash
     commands:
       - conda env create --file environment.yml
-      - export PATH=/opt/conda/envs/mnist/bin:$PATH
+      - conda activate mnist
       - python mnist/train.py
     artifacts:
       - path: lightning_logs
