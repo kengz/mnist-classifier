@@ -1,0 +1,6 @@
+workflows:
+  # https://docs.dstack.ai/usage/hello-world/
+  - name: hello
+    provider: bash
+    commands:
+      - echo "Hello, world!"

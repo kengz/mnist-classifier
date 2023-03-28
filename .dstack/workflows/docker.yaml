@@ -1,0 +1,15 @@
+workflows:
+  # https://docs.dstack.ai/usage/providers/#docker
+  - name: docker-hello
+    provider: docker
+    image: busybox
+    entrypoint: /bin/sh -i -c
+    commands:
+      - mkdir -p output
+      - echo 'Hello, world!' | tee output/hello.txt
+    artifacts:
+      - path: ./output
+    resources:
+      gpu:
+        name: K80
+        count: 1

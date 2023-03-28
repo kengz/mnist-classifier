@@ -1,0 +1,4 @@
+workflows:
+  # https://docs.dstack.ai/usage/providers/#code
+  - name: vscode
+    provider: code

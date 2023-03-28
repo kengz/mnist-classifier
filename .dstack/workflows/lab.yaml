@@ -1,0 +1,17 @@
+workflows:
+  # https://docs.dstack.ai/usage/providers/#lab
+  - name: lab
+    provider: lab
+
+  - name: lab-pip
+    help: Run Jupyter lab with custom pip packages
+    provider: lab
+    setup:
+      - pip install -r requirements.txt
+
+  - name: lab-conda
+    help: Run Jupyter lab with custom conda packages
+    provider: lab
+    setup:
+      - conda env create --file environment.yml
+      - python -m ipykernel install --user --name=mnist

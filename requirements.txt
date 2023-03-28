@@ -1,5 +1,5 @@
 pytorch-lightning
 pillow
-torchvision
+torchvision==1.13.0
 hydra-core==1.2.0
 -e .

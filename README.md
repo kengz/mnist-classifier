@@ -44,7 +44,7 @@ This run training with validation at epoch-end, and test when training is done. 
 
 ### dstack usage
 
-To use with [dstack](https://docs.dstack.ai), use the workflows defined in `.dstack/workflows.yaml`.
+For [dstack](https://docs.dstack.ai) usage, including interactive development, see workflows defined in `.dstack/workflows/*.yaml`.
 
 ```bash
 conda activate mnist
@@ -54,5 +54,5 @@ pip install -U dstack
 dstack init
 
 # run workflow
-dstack run setup-train
+dstack run pip-train
 ```

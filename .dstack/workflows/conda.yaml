@@ -1,0 +1,43 @@
+workflows:
+  # https://docs.dstack.ai/usage/conda/
+  - name: conda-setup-train
+    help: Directly setup Conda env and train, all-in-one
+    provider: bash
+    commands:
+      - conda env create --file environment.yml
+      - conda activate mnist
+      - python mnist/train.py
+    artifacts:
+      - path: lightning_logs
+
+  # below splits the above into distinct workflows to run more efficiently by reusing Conda env
+  - name: conda-setup
+    help: Setup Conda env as artifact for reuse by mounting
+    provider: bash
+    commands:
+      - conda env create --file environment.yml
+    artifacts:
+      - path: /opt/conda/envs/mnist
+
+  - name: conda-download
+    help: Download the MNIST dataset
+    provider: bash
+    deps:
+      - workflow: conda-setup
+    commands:
+      - conda activate mnist
+      - python mnist/prepare_data.py
+    artifacts:
+      - path: data
+
+  - name: conda-train
+    help: Train an MNIST model
+    deps:
+      - workflow: conda-setup
+      - workflow: conda-download
+    provider: bash
+    commands:
+      - conda activate mnist
+      - python mnist/train.py
+    artifacts:
+      - path: lightning_logs

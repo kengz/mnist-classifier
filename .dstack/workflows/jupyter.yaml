@@ -1,0 +1,17 @@
+workflows:
+  # https://docs.dstack.ai/usage/providers/#code
+  - name: jupyter
+    provider: notebook
+
+  - name: jupyter-pip
+    help: Run jupyter with custom pip packages
+    provider: notebook
+    setup:
+      - pip install -r requirements.txt
+
+  - name: jupyter-conda
+    help: Run jupyter with custom conda packages
+    provider: notebook
+    setup:
+      - conda env create --file environment.yml
+      - python -m ipykernel install --user --name=mnist

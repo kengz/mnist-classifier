@@ -1,0 +1,21 @@
+workflows:
+  # https://docs.dstack.ai/usage/artifacts/
+  - name: artifact-download
+    help: Download the MNIST dataset
+    provider: bash
+    commands:
+      - pip install -r requirements.txt
+      - python mnist/prepare_data.py
+    artifacts:
+      - path: data
+
+  - name: artifact-train
+    help: Train an MNIST model
+    deps:
+      - workflow: artifact-download
+    provider: bash
+    commands:
+      - pip install -r requirements.txt
+      - python mnist/train.py
+    artifacts:
+      - path: lightning_logs

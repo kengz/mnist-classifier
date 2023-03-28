@@ -1,0 +1,10 @@
+workflows:
+  # https://docs.dstack.ai/usage/environment-variables/
+  - name: env-vars
+    provider: bash
+    env:
+      - MY_ENV_1=VAL1
+      - MY_ENV_2=VAL2
+      - MY_ENV_3
+    commands:
+      - env
