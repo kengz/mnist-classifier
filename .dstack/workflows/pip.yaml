@@ -8,3 +8,13 @@ workflows:
       - python mnist/train.py
     artifacts:
       - path: lightning_logs
+
+  - name: pip-tune
+    help: Run hyperparameter tuning using Optuna and Hydra
+    provider: bash
+    commands:
+      - pip install -r requirements.txt
+      - python mnist/train.py hydra/sweeper=optuna +optuna=tune --multirun
+    artifacts:
+      - path: lightning_logs
+      - path: multirun

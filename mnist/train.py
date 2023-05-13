@@ -131,7 +131,7 @@ class LitMNIST(pl.LightningModule):
         return optimizer
 
 
-@hydra.main(version_base=None, config_path=str(DIR), config_name='config')
+@hydra.main(version_base=None, config_path=str(DIR / 'conf'), config_name='config')
 def main(cfg):
     dm = MNISTDataModule(**cfg.datamodule)
     model = LitMNIST(**cfg.model)
@@ -139,6 +139,7 @@ def main(cfg):
     trainer = pl.Trainer(**cfg.trainer)
     trainer.fit(model, datamodule=dm, ckpt_path=get_ckpt_path(cfg))
     trainer.test(datamodule=dm, ckpt_path='best')
+    return trainer.callback_metrics.get('val_acc')
 
 
 if __name__ == '__main__':
