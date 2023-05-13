@@ -4,7 +4,7 @@ Simple MNIST classifier example using PyTorch Lightning.
 
 ## Installation
 
-[Install Conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) if you haven't already.
+[Install Miniconda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html) if you haven't already.
 
 Create a Conda environment and install dependencies. This MNIST example uses:
 
