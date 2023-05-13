@@ -131,7 +131,7 @@ class LitMNIST(pl.LightningModule):
         return optimizer
 
 
-@hydra.main(version_base=None, config_path=DIR, config_name='config')
+@hydra.main(version_base=None, config_path=str(DIR), config_name='config')
 def main(cfg):
     dm = MNISTDataModule(**cfg.datamodule)
     model = LitMNIST(**cfg.model)

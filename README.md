@@ -17,6 +17,12 @@ Create a Conda environment and install dependencies. This MNIST example uses:
 conda env create --file environment.yml
 ```
 
+Before running any commands below, activate the environment:
+
+```bash
+conda activate mnist
+```
+
 ### Using pip (for demo completeness)
 
 Pip-based installation is not recommended as it provides less control on the dependencies, can be less optimal, and some packages are also only released through Conda. However a `requirements.txt` file is provided here for demo of a pip setup.
@@ -46,13 +52,20 @@ This run training with validation at epoch-end, and test when training is done. 
 
 For [dstack](https://docs.dstack.ai) usage, including interactive development, see workflows defined in `.dstack/workflows/*.yaml`.
 
-```bash
-conda activate mnist
+First, start dstack hub:
 
+```bash
 # setup dstack
 pip install -U dstack
-dstack init
+# start dstack hub
+dstack start
+```
 
+Then in a new shell, init dstack project and run workflow:
+
+```bash
+# initialize project
+dstack init
 # run workflow
 dstack run pip-train
 ```
